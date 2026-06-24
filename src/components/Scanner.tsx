@@ -198,10 +198,9 @@ export default function Scanner({ rates, onSaveRecord }: ScannerProps) {
               hasReten: false,
               hasMediaDieta: false,
               hasReclutamiento: false,
-              notes: "Registro manual",
+              notes: image ? "Registro manual con captura" : "Registro manual",
             });
-            setImage(null);
-            setMimeType(null);
+            // Preserve the uploaded image (do not clear image and mimeType)
             setScanError(null);
             setIsSaved(false);
           }}
@@ -327,21 +326,40 @@ export default function Scanner({ rates, onSaveRecord }: ScannerProps) {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs justify-center pt-2">
+              <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-md justify-center pt-2">
                 {image && mimeType && (
                   <button
                     onClick={() => triggerOCR(image, mimeType)}
-                    className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/30"
+                    className="flex-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/30"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                     Reintentar Escaneo
                   </button>
                 )}
                 <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition-all cursor-pointer border border-slate-700/50"
+                  onClick={() => {
+                    setExtractedData({
+                      date: new Date().toISOString().split("T")[0],
+                      hoursNormal: 0,
+                      hoursFestive: 0,
+                      hasReten: false,
+                      hasMediaDieta: false,
+                      hasReclutamiento: false,
+                      notes: "Registro manual tras error de escaneo",
+                    });
+                    setScanError(null);
+                    setIsSaved(false);
+                  }}
+                  className="flex-1 px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-xl transition-all cursor-pointer border border-emerald-500/20 flex items-center justify-center gap-1.5"
                 >
-                  Subir otra imagen
+                  <FileText className="w-3.5 h-3.5" />
+                  Rellenar Manualmente (Mantener Imagen)
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition-all cursor-pointer border border-slate-700/50 flex items-center justify-center gap-1.5"
+                >
+                  Subir otra
                 </button>
               </div>
             </div>
